@@ -20,7 +20,11 @@ app.use(session({
   secret: process.env.SESSION_SECRET || "your-secret-key",
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: process.env.NODE_ENV === "production", maxAge: 24 * 60 * 60 * 1000 },
+  cookie: {
+    secure: true,
+    sameSite: "none",
+    maxAge: 24 * 60 * 60 * 1000
+  },
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -29,7 +33,10 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error("MongoDB error:", err));
 
-app.use("/api/auth", authRoutes);
+app.use(cors({
+  origin: process.env.CLIENT_URL,
+  credentials: true,
+}));
 
 const PORT = process.env.PORT || 5000;
 
