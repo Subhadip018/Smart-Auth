@@ -13,13 +13,21 @@ const app = express();
 
 console.log("CLIENT_URL =", process.env.CLIENT_URL);
 
-app.use(cors({
-  origin: process.env.CLIENT_URL || "https://smart-auth-system.netlify.app",
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-}));
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://smart-auth-system.netlify.app"
+];
 
+app.use(cors({
+  origin: function(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+}));
 app.use(express.json());
 
 app.use(session({
