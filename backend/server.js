@@ -11,7 +11,17 @@ const authRoutes = require("./routes/auth");
 
 const app = express();
 
+console.log("CLIENT_URL =", process.env.CLIENT_URL);
+
+app.use(cors({
+  origin: process.env.CLIENT_URL || "https://smart-auth-system.netlify.app",
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
+
 app.use(express.json());
+
 app.use(session({
   secret: process.env.SESSION_SECRET || "your-secret-key",
   resave: false,
@@ -31,11 +41,6 @@ mongoose.connect(process.env.MONGO_URI)
   .catch((err) => console.error("MongoDB error:", err));
 
 app.use("/api/auth", authRoutes);
-
-app.use(cors({
-  origin: process.env.CLIENT_URL,
-  credentials: true,
-}));
 
 const PORT = process.env.PORT || 5000;
 
